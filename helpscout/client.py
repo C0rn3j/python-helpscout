@@ -138,7 +138,7 @@ class HelpScout:
         """
         return list(self.hit_(endpoint, method, resource_id, data, params))
 
-    def hit_(self, endpoint:str, method:str, resource_id:int|str|None=None, data:dict|None=None, params:dict|str|None=None) -> Generator[dict|None, None, None]:
+    def hit_(self, endpoint:str, method:str, resource_id:int|str|None=None, data:dict|None=None, params:dict|str|None=None) -> 'Generator[dict|None, None, None]':
         """Hits the api and yields the data.
 
         Parameters
@@ -196,7 +196,7 @@ class HelpScout:
         else:
             raise HelpScoutException(r.text)
 
-    def _results_with_pagination(self, response:dict, method:str) -> Generator[dict, None, None]:
+    def _results_with_pagination(self, response:dict, method:str) -> 'Generator[dict, None, None]':
         """Requests and yields pagination results.
 
         Parameters
