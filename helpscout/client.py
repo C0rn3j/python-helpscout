@@ -1,9 +1,11 @@
+# 3.13 defaults to this, TODO remove
+from __future__ import annotations
+
 import logging
 import time
 import requests
 import typing
 
-#import helpscout
 if typing.TYPE_CHECKING:
     from collections.abc import Generator
 
@@ -55,7 +57,7 @@ class HelpScout:
         self.rate_limit_sleep = rate_limit_sleep
         self.access_token = None
 
-    def __getattr__(self, endpoint:str) -> 'HelpScoutEndpointRequester':
+    def __getattr__(self, endpoint:str) -> HelpScoutEndpointRequester:
         """Returns a request to hit the API in a nicer way. E.g.:
         > client = HelpScout(app_id='asdasd', app_secret='1021')
         > client.conversations.get()
@@ -138,7 +140,7 @@ class HelpScout:
         """
         return list(self.hit_(endpoint, method, resource_id, data, params))
 
-    def hit_(self, endpoint:str, method:str, resource_id:int|str|None=None, data:dict|None=None, params:dict|str|None=None) -> 'Generator[dict|None, None, None]':
+    def hit_(self, endpoint:str, method:str, resource_id:int|str|None=None, data:dict|None=None, params:dict|str|None=None) -> Generator[dict|None, None, None]:
         """Hits the api and yields the data.
 
         Parameters
@@ -196,7 +198,7 @@ class HelpScout:
         else:
             raise HelpScoutException(r.text)
 
-    def _results_with_pagination(self, response:dict, method:str) -> 'Generator[dict, None, None]':
+    def _results_with_pagination(self, response:dict, method:str) -> Generator[dict, None, None]:
         """Requests and yields pagination results.
 
         Parameters
@@ -324,7 +326,7 @@ class HelpScoutEndpointRequester:
         self.endpoint = endpoint
         self.specific_resource = specific_resource
 
-    def __getattr__(self, method:str) -> 'partial | HelpScoutEndpointRequester':
+    def __getattr__(self, method:str) -> partial | HelpScoutEndpointRequester:
         """Catches http methods like get, post, patch, put and delete.
         Returns a subrequester when methods not named after http methods are
         requested, as this are considered attributes of the main object, like
@@ -359,7 +361,7 @@ class HelpScoutEndpointRequester:
                 False,
                 )
 
-    def __getitem__(self, resource_id:int|str) -> 'HelpScoutEndpointRequester':
+    def __getitem__(self, resource_id:int|str) -> HelpScoutEndpointRequester:
         """Returns a second endpoint requester extending the endpoint to a
         specific resource_id or resource_name.
 
