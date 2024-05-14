@@ -14,19 +14,29 @@ In order to handle pagination calls to API are done inside a generator.
 As a consequence, even post and deletes have to be "nexted" if using the *hit_*
 method.
 
+## Requirements
+
+Pythom 3.11+, `2.0.0` was the last version to support Python 2.7-3.10
+
 ## Installation
 
-The package can be installed cloning the repository and doing
-`python setup.py install` or `pip install .`.
+Using PyPI into a [venv](https://docs.python.org/3/library/venv.html):
+```bash
+pip install python-helpscout-v2 --require-virtualenv`
+```
 
-It can also be install from pypi.org doing `pip install python-helpscout-v2`.
+Manually by cloning the repository and executing pip into a [venv](https://docs.python.org/3/library/venv.html):
+```bash
+pip install . --require-virtualenv`
+```
+
 
 ## Authentication
 
 In order to use the API you need an app id and app secret.
 
 More about credentials can be found in
-[helpscout's documentation](https://developer.helpscout.com/mailbox-api/overview/authentication/).
+[Help Scout's documentation](https://developer.helpscout.com/mailbox-api/overview/authentication/).
 
 ## General use
 

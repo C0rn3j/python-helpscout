@@ -1,6 +1,12 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented here.
+
+## [3.0.0] - 2024-05-14
+### Added
+- Type hints for most functions
+### Changed
+- Now requires Python 3.11+
 
 ## [2.0.0] - 2019-10-14
 ### Changed
