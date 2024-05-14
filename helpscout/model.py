@@ -2,8 +2,8 @@ class HelpScoutObject(object):
 
     key = ''
 
-    def __init__(self, api_object):
-        """Object build from an API dictionary.
+    def __init__(self, api_object:dict):
+        """Object built from an API dictionary.
         Variable assignments to initialized objects is not expected to be done.
 
         Parameters
@@ -24,18 +24,18 @@ class HelpScoutObject(object):
             setattr(self, key, value)
 
     @classmethod
-    def from_results(cls, api_results):
+    def from_results(cls, api_results) -> 'list[HelpScoutObject]':
         """Generates HelpScout objects from API results.
 
         Parameters
         ----------
         api_results: generator({cls.key: [dict]}) or generator(dict)
-            A generator returning API responses that cointain a list of
+            A generator returning API responses that contain a list of
             objects each under the class key.
 
         Returns
         -------
-        [HelpScoutObject]
+        list[HelpScoutObject]
         """
         results = []
         for api_result in api_results:
@@ -45,7 +45,7 @@ class HelpScoutObject(object):
         return results
 
     @classmethod
-    def cls(cls, entity_name, key):
+    def cls(cls, entity_name:str, key:str):
         """Returns the object class based on the entity_name.
 
         Parameters
@@ -77,7 +77,7 @@ class HelpScoutObject(object):
         globals()[class_name] = cls = type(class_name, (cls,), {'key': key})
         return cls
 
-    def __setattr__(self, attr, value):
+    def __setattr__(self, attr:str, value:object):
         """Sets an attribute to an object and adds it to the attributes list.
 
         Parameters
@@ -108,7 +108,7 @@ class HelpScoutObject(object):
         for attr, value in zip(self._attrs, state[1]):
             setattr(self, attr, value)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Equality comparison."""
         if self.__class__ is not other.__class__:
             return False
@@ -130,7 +130,7 @@ class HelpScoutObject(object):
         values = tuple(getattr(self, attr) for attr in self._attrs)
         return hash(self._attrs + flatten(values))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Returns the object as a string."""
         name = self.__class__.__name__
         attrs = self._attrs
@@ -145,13 +145,15 @@ class HelpScoutObject(object):
     __str__ = __repr__
 
 
-def get_subclass_instance(class_name, key):
+def get_subclass_instance(class_name: str, key):
     """Gets a dynamic class from a class name for unpickling.
 
     Parameters
     ----------
-    name: str
+    class_name: str
         A class name, expected to start with Upper case.
+    key: ???
+        TODO Missing desc
 
     Returns
     -------

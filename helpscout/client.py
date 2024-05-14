@@ -1,13 +1,14 @@
 import logging
 import time
+import requests
+import typing
+
+#import helpscout
+if typing.TYPE_CHECKING:
+    from collections.abc import Generator
 
 from functools import partial
-try:  # Python 3
-    from urllib.parse import urljoin
-except ImportError:  # Python 2
-    from urlparse import urljoin
-
-import requests
+from urllib.parse import urljoin
 
 from helpscout.exceptions import (HelpScoutException,
                                   HelpScoutAuthenticationException,
@@ -22,10 +23,10 @@ PageKey = 'page'
 
 class HelpScout:
 
-    def __init__(self, app_id, app_secret,
-                 base_url='https://api.helpscout.net/v2/',
-                 sleep_on_rate_limit_exceeded=True,
-                 rate_limit_sleep=10):
+    def __init__(self, app_id:str, app_secret:str,
+                 base_url:str='https://api.helpscout.net/v2/',
+                 sleep_on_rate_limit_exceeded:bool=True,
+                 rate_limit_sleep:int=10):
         """Help Scout API v2 client wrapper.
 
         The app credentials are created on the My App section in your profile.
@@ -40,7 +41,7 @@ class HelpScout:
             The application secret.
         base_url: str
             The API's base url.
-        sleep_on_rate_limit_exceeded: Boolean
+        sleep_on_rate_limit_exceeded: bool
             True to sleep and retry on rate limits exceeded.
             Otherwise raises an HelpScoutRateLimitExceededException exception.
         rate_limit_sleep: int
@@ -54,7 +55,7 @@ class HelpScout:
         self.rate_limit_sleep = rate_limit_sleep
         self.access_token = None
 
-    def __getattr__(self, endpoint):
+    def __getattr__(self, endpoint:str) -> 'HelpScoutEndpointRequester':
         """Returns a request to hit the API in a nicer way. E.g.:
         > client = HelpScout(app_id='asdasd', app_secret='1021')
         > client.conversations.get()
@@ -76,19 +77,18 @@ class HelpScout:
         """
         return HelpScoutEndpointRequester(self, endpoint, False)
 
-    def get_objects(self, endpoint, resource_id=None, params=None,
-                    specific_resource=False):
+    def get_objects(self, endpoint:str, resource_id:int|str|None=None, params:dict|str|None=None, specific_resource:bool=False) -> HelpScoutObject|list[HelpScoutObject]:
         """Returns the objects from the endpoint filtering by the parameters.
 
         Parameters
         ----------
         endpoint: str
             One of the endpoints in the API. E.g.: conversations, mailboxes.
-        resource_id: int or str or None
+        resource_id: int | str | None
             The id of the resource in the endpoint to query.
             E.g.: in "GET /v2/conversations/123 HTTP/1.1" the id would be 123.
             If None is provided, nothing will be done
-        params: dict or str or None
+        params: dict | str | None
             Dictionary with the parameters to send to the url.
             Or the parameters already un url format.
         specific_resource: bool
@@ -98,17 +98,16 @@ class HelpScout:
 
         Returns
         -------
-        [HelpScoutObject]
+        HelpScoutObject | list[HelpScoutObject]
             A list of objects returned by the api.
         """
         cls = HelpScoutObject.cls(endpoint, endpoint)
-        results = cls.from_results(
-            self.hit_(endpoint, 'get', resource_id, params=params))
+        results:list[HelpScoutObject] = cls.from_results( self.hit_(endpoint, 'get', resource_id, params=params) )
         if resource_id is not None or specific_resource:
             return results[0]
         return results
 
-    def hit(self, endpoint, method, resource_id=None, data=None, params=None):
+    def hit(self, endpoint:str, method:str, resource_id:int|str|None=None, data:dict|None=None, params:dict|str|None=None) -> list[dict|None]:
         """Hits the api and returns all the data.
         If several calls are needed due to pagination, control won't be
         returned to the caller until all is retrieved.
@@ -120,26 +119,26 @@ class HelpScout:
         method: str
             The http method to hit the endpoint with.
             One of {'get', 'post', 'put', 'patch', 'delete', 'head', 'options'}
-        resource_id: int or str or None
+        resource_id: int | str | None
             The id of the resource in the endpoint to query.
             E.g.: in "GET /v2/conversations/123 HTTP/1.1" the id would be 123.
             If None is provided, nothing will be done
-        data: dict or None
+        dict: dict | None
             A dictionary with the data to send to the API as json.
-        params: dict or str or None
+        params: dict | str | None
             Dictionary with the parameters to send to the url.
             Or the parameters already un url format.
 
         Returns
         -------
-        [dict] or [None]
-            dict: when several objects are received from the API, a list of
+        list[dict] | list[None]
+            list: when several objects are received from the API, a list of
                   dictionaries with HelpScout's _embedded data will be returned
             None if http 201 created or 204 no content are received.
         """
         return list(self.hit_(endpoint, method, resource_id, data, params))
 
-    def hit_(self, endpoint, method, resource_id=None, data=None, params=None):
+    def hit_(self, endpoint:str, method:str, resource_id:int|str|None=None, data:dict|None=None, params:dict|str|None=None) -> Generator[dict|None, None, None]:
         """Hits the api and yields the data.
 
         Parameters
@@ -149,19 +148,19 @@ class HelpScout:
         method: str
             The http method to hit the endpoint with.
             One of {'get', 'post', 'put', 'patch', 'delete', 'head', 'options'}
-        resource_id: int or str or None
+        resource_id: int | str | None
             The id of the resource in the endpoint to query.
             E.g.: in "GET /v2/conversations/123 HTTP/1.1" the id would be 123.
             If None is provided, nothing will be done
-        data: dict or None
+        data: dict | None
             A dictionary with the data to send to the API as json.
-        params: dict or str or None
+        params: dict | str | None
             Dictionary with the parameters to send to the url.
             Or the parameters already un url format.
 
         Yields
         ------
-        dict or None
+        dict | None
             Dictionary with HelpScout's _embedded data.
             None if http 201 created or 204 no content are received.
         """
@@ -197,7 +196,7 @@ class HelpScout:
         else:
             raise HelpScoutException(r.text)
 
-    def _results_with_pagination(self, response, method):
+    def _results_with_pagination(self, response:dict, method:str) -> Generator[dict, None, None]:
         """Requests and yields pagination results.
 
         Parameters
@@ -243,8 +242,7 @@ class HelpScout:
                 raise HelpScoutException(r.text)
 
     def _authenticate(self):
-        """Authenticates with the API and gets a token for subsequent requests.
-        """
+        """Authenticates with the API and gets a token for subsequent requests."""
         url = urljoin(self.base_url, 'oauth2/token')
         data = {
             'grant_type': 'client_credentials',
@@ -287,7 +285,7 @@ class HelpScout:
             self.sleep_on_rate_limit_exceeded ==
             other.sleep_on_rate_limit_exceeded)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Returns the object as a string."""
         name = self.__class__.__name__
         attrs = (
@@ -307,12 +305,12 @@ class HelpScout:
 
 class HelpScoutEndpointRequester:
 
-    def __init__(self, client, endpoint, specific_resource):
+    def __init__(self, client:HelpScout, endpoint:str, specific_resource:bool):
         """Client wrapper to perform requester.get/post/put/patch/delete.
 
         Parameters
         ----------
-        client: HelpScoutClient
+        client: HelpScout
             A help scout client instance to query the API.
         endpoint: str
             One of the endpoints in the API. E.g.: conversations, mailboxes.
@@ -324,7 +322,7 @@ class HelpScoutEndpointRequester:
         self.endpoint = endpoint
         self.specific_resource = specific_resource
 
-    def __getattr__(self, method):
+    def __getattr__(self, method:str) -> 'partial | HelpScoutEndpointRequester':
         """Catches http methods like get, post, patch, put and delete.
         Returns a subrequester when methods not named after http methods are
         requested, as this are considered attributes of the main object, like
@@ -359,7 +357,7 @@ class HelpScoutEndpointRequester:
                 False,
                 )
 
-    def __getitem__(self, resource_id):
+    def __getitem__(self, resource_id:int|str) -> 'HelpScoutEndpointRequester':
         """Returns a second endpoint requester extending the endpoint to a
         specific resource_id or resource_name.
 
@@ -368,7 +366,7 @@ class HelpScoutEndpointRequester:
 
         Parameters
         ----------
-        resource_id: int or str
+        resource_id: int | str
             The resource id or attribute available in the API through a
             specific call.
 
@@ -408,7 +406,7 @@ class HelpScoutEndpointRequester:
                 self.endpoint == other.endpoint and
                 self.client == other.client)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Returns the object as a string."""
         name = self.__class__.__name__
         return '%s(app_id="%s", endpoint="%s")' % (
