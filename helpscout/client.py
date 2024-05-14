@@ -5,8 +5,10 @@ import logging
 import time
 import requests
 import typing
+from typing import overload
 
 if typing.TYPE_CHECKING:
+    from typing import Callable, Literal
     from collections.abc import Generator
 
 from functools import partial
@@ -326,7 +328,13 @@ class HelpScoutEndpointRequester:
         self.endpoint = endpoint
         self.specific_resource = specific_resource
 
-    def __getattr__(self, method:str) -> partial | HelpScoutEndpointRequester:
+    @overload
+    def __getattr__(self, method: Literal['get']) -> Callable: ...
+
+    @overload
+    def __getattr__(self, method:str) -> Callable | partial | HelpScoutEndpointRequester: ...
+
+    def __getattr__(self, method:str) -> Callable | partial | HelpScoutEndpointRequester:
         """Catches http methods like get, post, patch, put and delete.
         Returns a subrequester when methods not named after http methods are
         requested, as this are considered attributes of the main object, like
@@ -339,8 +347,8 @@ class HelpScoutEndpointRequester:
 
         Returns
         -------
-        client.get_objects return value for the *get* method.
-        client.hit return value for other http named methods.
+        Callable - client.get_objects return value for the *get* method.
+        partial - client.hit return value for other http named methods.
         HelpScoutEndpointRequester when other attributes are accessed, this is
           expected to be used mainly for subattributes of an endpoint or
           subendpoints of specific resources, like tags from a conversation.
