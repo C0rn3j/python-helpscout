@@ -394,7 +394,7 @@ class HelpScoutEndpointRequester:
             True,
             )
 
-    def _yielded_function(self, method, *args, **kwargs):
+    def _yielded_function(self, method:str, *args, **kwargs):
         """Calls a generator function and calls next.
         It is intended to be used with post, put, patch and delete which do not
         return objects, but as hit is a generator, still have to be nexted.
@@ -405,6 +405,8 @@ class HelpScoutEndpointRequester:
             Positional arguments after *method* to forward to client.hit .
         *kwargs: keyword arguments
             Keyword arguments after *method* to forward to client.hit.
+        method: str
+            Inherited
 
         Returns
         -------
