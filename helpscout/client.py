@@ -259,6 +259,8 @@ class HelpScout:
 
     def _authentication_headers(self):
         """Returns authentication headers."""
+        if self.access_token is None:
+            raise HelpScoutAuthenticationException('Tried to get access_token without prior authentication')
         return {
             'Authorization': 'Bearer ' + self.access_token,
             'content-type': 'application/json',
