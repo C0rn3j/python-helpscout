@@ -1,3 +1,6 @@
+# 3.13 defaults to this, TODO remove
+from __future__ import annotations
+
 class HelpScoutObject(object):
 
     key = ''
@@ -24,7 +27,7 @@ class HelpScoutObject(object):
             setattr(self, key, value)
 
     @classmethod
-    def from_results(cls, api_results) -> 'list[HelpScoutObject]':
+    def from_results(cls, api_results) -> list[HelpScoutObject]:
         """Generates HelpScout objects from API results.
 
         Parameters
