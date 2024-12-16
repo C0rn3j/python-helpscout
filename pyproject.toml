@@ -1,0 +1,156 @@
+#def version():
+#    with open('helpscout/__init__.py', 'r') as f:
+#        for line in f:
+#            if line.startswith('__version__ ='):
+#                return line[15:-2]
+#    return '0.0.0'
+
+
+#def readme():
+#    with open('README.md') as f:
+#        return f.read()
+
+
+#    version=version(),
+#    author='santiher',
+#    long_description=readme(),
+#    long_description_content_type='text/markdown',
+#    install_requires=['requests'],
+#    test_suite='tests',
+
+
+[project]
+	name = "python-helpscout-v2"
+	version = "2.0.1"
+	description = "Wrapper to query Help Scout v2 API"
+	readme = "README.md"
+	license = { text = "MIT" }
+	# Change the version for the tools below too when bumping up
+	requires-python = ">=3.11"
+	classifiers = [
+		'License :: OSI Approved :: MIT License',
+		'Programming Language :: Python :: 3',
+		'Programming Language :: Python :: 3.11',
+		'Programming Language :: Python :: 3.12',
+		'Typing :: Typed',
+	]
+	dynamic = ["dependencies"]
+
+#[project.gui-scripts]
+#	tauonmb = "tauon.__main__:main"
+
+#[project.entry-points."distutils.commands"]
+#	compile_translations = "compile_translations:main"
+
+[project.urls]
+	homepage = "https://github.com/C0rn3j/python-helpscout-v2"
+
+[build-system]
+	requires = ["setuptools>=75.3", "setuptools_scm"]
+	build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+#	package-dir = {"" = "src"}
+	packages = [
+		"helpscout",
+	]
+
+[tool.setuptools.dynamic]
+	dependencies = {file = "requirements.txt"}
+
+#[tool.setuptools.package-data]
+#	"tauon" = ["assets/*", "assets/svg/*", "locale/*/*/*.mo", "templates/*", "theme/*"]
+
+# https://github.com/microsoft/pyright/blob/main/docs/configuration.md#pyright-configuration
+[tool.pyright]
+	#defineConstant = { DEBUG = true }
+	pythonVersion = "3.11"
+
+	# Defaults: https://github.com/microsoft/pyright/blob/main/docs/configuration.md#diagnostic-settings-defaults
+	#enableExperimentalFeatures          = false
+	strictListInference                 = true
+	strictDictionaryInference           = true
+	strictSetInference                  = true
+	deprecateTypingAliases              = true
+	reportMissingTypeStubs              = "error"
+	reportConstantRedefinition          = "error"
+	reportDeprecated                    = "error"
+	reportDuplicateImport               = "error"
+	reportIncompleteStub                = "error"
+	reportInconsistentConstructor       = "error"
+	reportInvalidStubStatement          = "error"
+	reportMatchNotExhaustive            = "error"
+	reportMissingParameterType          = "error"
+	reportMissingTypeArgument           = "warning"
+	reportPrivateUsage                  = "error"
+	reportTypeCommentUsage              = "error"
+	reportUnknownArgumentType           = "warning"
+	reportUnknownLambdaType             = "error"
+	reportUnknownMemberType             = "warning"
+	reportUnknownParameterType          = "warning"
+	reportUnknownVariableType           = "warning"
+	reportUnnecessaryCast               = "error"
+	reportUnnecessaryComparison         = "error"
+	reportUnnecessaryContains           = "error"
+	reportUnnecessaryIsInstance         = "error"
+	reportUninitializedInstanceVariable = "warning"
+	reportUnnecessaryTypeIgnoreComment  = "warning"
+#	reportUnusedCallResult              = "warning"
+	reportUnusedClass                   = "error"
+	reportUnusedImport                  = "error"
+	reportUnusedFunction                = "error"
+	reportUnusedVariable                = "warning"
+	reportUntypedBaseClass              = "error"
+	reportUntypedClassDecorator         = "error"
+	reportUntypedFunctionDecorator      = "error"
+	reportUntypedNamedTuple             = "error"
+	reportCallInDefaultInitializer      = "warning"
+	reportImplicitOverride              = "warning"
+	reportImplicitStringConcatenation   = "warning"
+	reportImportCycles                  = "warning"
+	reportMissingSuperCall              = "warning"
+	reportPropertyTypeMismatch          = "warning"
+	reportShadowedImports               = "warning"
+
+# https://docs.astral.sh/ruff/configuration/
+[tool.ruff]
+	# Target non-EOL releases at minimum - https://devguide.python.org/versions/
+	target-version = "py311"
+	# Soft 80 and hard break at 120
+	line-length = 120
+
+[tool.ruff.lint.flake8-quotes]
+	inline-quotes = "single"
+	docstring-quotes = "double"
+
+[tool.ruff.format]
+	quote-style = "single"
+	indent-style = "tab"
+
+# https://docs.astral.sh/ruff/rules/
+[tool.ruff.lint]
+select = ['ALL']
+	ignore = [
+		'Q003',   # avoidable-escaped-quote                   - It's not that important, we just use escapes, keeping the quotes consistent
+		'W191',   # tab-indentation                           - We use tabs for indents, disabling this PEP 8 recommendation
+		'D206',   # indent-with-spaces                        - ^
+		'D100',   # undocumented-public-module                - TODO(Martin): We currently don't even have typing fully implemented, let's maybe care about undocumented functions/classes later
+		'D101',   # undocumented-public-class                 - ^
+		'D102',   # public-method                             - ^
+		'D103',   # undocumented-public-function              - ^
+		'D104',   # undocumented-public-package               - ^
+#		'D105',   # undocumented-magic-method                 - ^ < This one is a bit more severe though
+		'D106',   # undocumented-public-nested-class          - ^
+		'D107',   # undocumented-public-init                  - ^
+		'D400',   # ends-in-period                            - We do not care if docstrings end with a period
+		'D415',   # ends-in-punctuation                       - ^
+		'D401',   # non-imperative-mood                       - Wants docstrings in imperative language but it's really not foolproof, disable
+		'EM101',  # raw-string-in-exception                   - We do not care about .format in exceptions, readability is not *our* problem, traceback should be colorized to avoid this instead
+		'EM102',  # f-string-in-exception                     - ^
+		'EM103',  # dot-format-in-exception                   - ^
+		'ERA001', # commented-out-code                        - Tests for commented out code, but it has way too many false positives, so disable
+		'FBT001', # boolean-type-hint-positional-argument     - Allow positional booleans in functions, it's not really that much of an issue
+		'FBT002', # boolean-default-value-positional-argument - ^
+		'FBT003', # boolean-positional-value-in-call          - ^
+		'TD003',  # missing-todo-link                         - We're fine not linking existing issues in TODOs, it's fine to have them noted in code only
+	]

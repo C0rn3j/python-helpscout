@@ -1,4 +1,3 @@
-# 3.13 defaults to this, TODO remove
 from __future__ import annotations
 
 import logging
