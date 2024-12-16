@@ -1,7 +1,7 @@
-# 3.13 defaults to this, TODO remove
 from __future__ import annotations
 
-class HelpScoutObject(object):
+
+class HelpScoutObject:
 
     key = ''
 

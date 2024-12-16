@@ -16,13 +16,13 @@ method.
 
 ## Requirements
 
-Pythom 3.11+, `2.0.0` was the last version to support Python 2.7-3.10
+Python 3.11+
 
 ## Installation
 
 Using PyPI into a [venv](https://docs.python.org/3/library/venv.html):
 ```bash
-pip install python-helpscout-v2 --require-virtualenv`
+pip install python-helpscout --require-virtualenv`
 ```
 
 Manually by cloning the repository and executing pip into a [venv](https://docs.python.org/3/library/venv.html):
