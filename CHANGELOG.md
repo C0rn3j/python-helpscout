@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented here.
 
-## [3.0.0] - 2024-05-14
+## [2.0.1] - 2024-12-16
 ### Added
 - Type hints for most functions
 ### Changed

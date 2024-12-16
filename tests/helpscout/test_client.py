@@ -1,11 +1,13 @@
 from functools import partial
-from unittest import main, TestCase
-from unittest.mock import call, MagicMock, patch, PropertyMock
+from unittest import TestCase, main
+from unittest.mock import MagicMock, PropertyMock, call, patch
 
 from helpscout.client import EmbeddedKey, HelpScout, HelpScoutEndpointRequester
-from helpscout.exceptions import (HelpScoutException,
-                                  HelpScoutAuthenticationException,
-                                  HelpScoutRateLimitExceededException)
+from helpscout.exceptions import (
+	HelpScoutAuthenticationException,
+	HelpScoutException,
+	HelpScoutRateLimitExceededException,
+)
 
 
 class TestClient(TestCase):
